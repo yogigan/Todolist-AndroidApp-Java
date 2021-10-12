@@ -1,10 +1,6 @@
 package com.example.todolist.activity;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,18 +11,20 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist.R;
+import com.example.todolist.helper.DBHelper;
+
+import java.util.HashMap;
 
 public class FormProfileActivity extends AppCompatActivity {
     EditText editTextName;
     RadioButton radioMale, radioFemale;
     SeekBar seekBarAge;
     CheckBox checkBoxPainting, checkboxReading, checkboxSinging;
-    Button buttonSave;
-    AlertDialog.Builder dialog;
-    View dialogView;
-    LayoutInflater inflater;
-    TextView textSeekbarAge, textName, textGender, textAge, textHobby;
+    Button buttonSave, buttonBack;
+    TextView textSeekbarAge;
     String selectedGender, selectedHobby;
+    DBHelper SQLite = new DBHelper(this);
+    boolean isUserAlreadyExist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,58 +55,86 @@ public class FormProfileActivity extends AppCompatActivity {
         checkboxSinging = findViewById(R.id.checkboxSinging);
         buttonSave = findViewById(R.id.btnSave);
         buttonSave.setOnClickListener(v -> {
-            showDialog();
+            saveProfile();
         });
-
+        buttonBack = findViewById(R.id.btn_back);
+        buttonBack.setOnClickListener(v -> {
+            finish();
+        });
+        setUserData();
     }
 
-    private void showDialog() {
-        dialog = new AlertDialog.Builder(FormProfileActivity.this);
-        inflater = getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.alert_dialog, null);
-        dialog.setView(dialogView);
-        dialog.setCancelable(true);
-        dialog.setTitle("");
-
-        textName = dialogView.findViewById(R.id.textName);
-        textGender = dialogView.findViewById(R.id.textGender);
-        textAge = dialogView.findViewById(R.id.textAge);
-        textHobby = dialogView.findViewById(R.id.textHobby);
-
-        textName.setText("  Nama : " + editTextName.getText());
-
+    public void saveProfile() {
         selectedGender = "";
         if (radioMale.isChecked()) {
             selectedGender = "Laki-laki";
         } else if (radioFemale.isChecked()) {
             selectedGender = "Perempuan";
         }
-        textGender.setText("  Jenis Kelamin : " + selectedGender);
-        textAge.setText("  Umur : " + textSeekbarAge.getText());
 
         selectedHobby = "";
         if (checkBoxPainting.isChecked()) {
-            selectedHobby += " Melukis";
+            selectedHobby += "Melukis ";
         }
         if (checkboxReading.isChecked()) {
-            selectedHobby += " Membaca";
+            selectedHobby += "Membaca ";
         }
         if (checkboxSinging.isChecked()) {
-            selectedHobby += " Menyanyi";
+            selectedHobby += " Menyanyi ";
         }
-        textHobby.setText("  Hobi : " + selectedHobby);
 
-        dialog.setPositiveButton("Simpan", (dialog, which) -> {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("name",editTextName.getText().toString());
-            intent.putExtra("gender",selectedGender);
-            intent.putExtra("age",textSeekbarAge.getText());
-            intent.putExtra("hobby",selectedHobby);
-            dialog.dismiss();
-            startActivity(intent);
-        });
-        dialog.setNegativeButton("Tutup", (dialog, which) -> dialog.dismiss());
-        dialog.show();
+        if (isUserAlreadyExist) {
+            SQLite.updateUser(
+                    editTextName.getText().toString(),
+                    selectedGender,
+                    Integer.parseInt(textSeekbarAge.getText().toString()),
+                    selectedHobby);
+        } else {
+            SQLite.insertUser(
+                    editTextName.getText().toString(),
+                    selectedGender,
+                    Integer.parseInt(textSeekbarAge.getText().toString()),
+                    selectedHobby);
+        }
+        finish();
+    }
+
+    public void setUserData() {
+        HashMap<String, String> row = SQLite.getUser();
+        if (!row.isEmpty()) {
+            isUserAlreadyExist = true;
+        }
+        String name = row.get("username") == null ? "" : row.get("username");
+        String gender = row.get("gender") == null ? "" : row.get("gender");
+        String age = row.get("age") == null ? "" : row.get("age");
+        String hobby = row.get("hobby") == null ? "" : row.get("hobby");
+
+        editTextName.setText(name);
+
+        if (gender.equalsIgnoreCase("Laki-laki")) {
+            radioMale.setChecked(true);
+        } else if (gender.equalsIgnoreCase("Perempuan")) {
+            radioFemale.setChecked(true);
+        } else {
+            radioMale.setChecked(false);
+            radioFemale.setChecked(false);
+        }
+
+        if (!age.equals("")) {
+            textSeekbarAge.setText(age);
+            seekBarAge.setProgress(Integer.parseInt(age));
+        }
+
+        if (hobby.contains("Melukis")) {
+            checkBoxPainting.setChecked(true);
+        }
+        if (hobby.contains("Membaca")) {
+            checkboxReading.setChecked(true);
+        }
+        if (hobby.contains("Menyanyi")) {
+            checkboxSinging.setChecked(true);
+        }
+
     }
 
 }

@@ -18,7 +18,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="30dp"
-        android:text="Form Pendaftaran"
+        android:text="Edit Profil"
         android:textSize="18dp"
         android:textStyle="bold" />
 
@@ -32,7 +32,7 @@
             android:id="@+id/editName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="25dp"
             android:background="@drawable/border_editext"
             android:paddingLeft="10dp"
             android:textSize="14sp" />
@@ -40,11 +40,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="7dp"
-
-            android:paddingHorizontal="5dp"
-            android:text="Nama"
+            android:text="Nama : "
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -116,7 +112,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Umur"
+            android:text="Umur :"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -171,22 +167,26 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="30dp"
-        android:gravity="right"
         android:orientation="horizontal"
-        tools:ignore="RtlHardcoded">
-
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="Batal"/>
         <Button
             android:id="@+id/btnSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
+            android:layout_weight="0.5"
             android:background="@color/primary"
-            android:text="SIMPAN" />
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textColor="@color/white"
+            android:text="Edit"/>
     </LinearLayout>
-
 </LinearLayout>
